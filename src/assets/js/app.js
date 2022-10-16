@@ -1,3 +1,5 @@
+"use strict";
+
 const CardContainer = document.querySelector(".container");
 
 getdata();
@@ -11,27 +13,35 @@ window.addEventListener("resize", (e) => {
 
 function setTimesWidth() {
 	const CardContent = document.querySelectorAll(".content");
-	let VisibleItems;
 	const visibleBtn = document.createElement("button");
 	visibleBtn.className = "timetable__btn";
 	visibleBtn.textContent = "еще...";
 
-	CardContent.forEach((content) => {
-		const TimetableList = content.querySelector(".timetable__list");
-		const TimetableItems = content.querySelectorAll(".timetable__item");
+	for (let item of CardContent) {
+		const TimetableList = item.querySelector(".timetable__list");
+		const TimetableItems = item.querySelectorAll(".timetable__item");
 
 		TimetableItems.forEach((item) => {
+			item.style.display = "block";
+
 			if (item.getBoundingClientRect().y > TimetableList.getBoundingClientRect().y) {
-				item.classList.add("visible");
-				// item.style.display = "none";
-			} else {
-				item.classList.remove("visible");
-				// item.style.display = "block";
+				item.style.display = "none";
 			}
 		});
+	}
 
-		VisibleItems = content.querySelectorAll(".visible");
-	});
+	// CardContent.forEach((content) => {
+	// 	const TimetableList = content.querySelector(".timetable__list");
+	// 	const TimetableItems = content.querySelectorAll(".timetable__item");
+
+	// 	TimetableItems.forEach((item) => {
+	// 		item.style.display = "block";
+
+	// 		if (item.getBoundingClientRect().y > TimetableList.getBoundingClientRect().y) {
+	// 			item.style.display = "none";
+	// 		}
+	// 	});
+	// });
 }
 
 function setTitleWidth() {
@@ -81,35 +91,54 @@ function buildCards(data) {
 			TimeIcon = document.createElement("img"),
 			TitleLink = document.createElement("a"),
 			Title = document.createElement("h2"),
-			ContentList = document.createElement("ul");
-
-		TimeIcon.src = "./assets/img/clock-circular-outline.svg";
-		TimeIcon.alt = "clock-icon";
+			ContentList = document.createElement("ul"),
+			ContentControl = document.createElement("div"),
+			ContentControlDesc = document.createElement("div"),
+			ContentSum = document.createElement("div"),
+			ContentSumNumb = document.createElement("p"),
+			ContentSumValute = document.createElement("img"),
+			ContentBtn = document.createElement("a");
 
 		CardElem.className = "card";
 		ImageBlock.className = "card__img";
 		ContentDesc.className = "content__desc";
 		AdvElem.className = "card__img-adv";
-		ImageLink.href = "";
-		ImageLink.target = "_self";
-		Image.src = obj.image;
-		Image.alt = obj.title;
 		TitleBlock.className = "content__title-block";
 		TimeElem.className = "content__time";
 		TimeText.className = "content__time-text";
 		Content.className = "card__content content";
 		TitleLink.className = "content__title";
-		(TitleLink.href = ""), (TitleLink.target = "_self");
-		Title.textContent = obj.title;
 		ContentList.className = "content__list";
+		ContentControl.className = "content__control";
+		ContentControlDesc.className = "content__control-desc";
+		ContentSum.className = "content__sum";
+		ContentSumNumb.className = "content__sum-numb";
+		ContentBtn.className = "content__btn";
+
+		TimeIcon.src = "./assets/img/clock-circular-outline.svg";
+		TimeIcon.alt = "clock-icon";
+		Image.src = obj.image;
+		Image.alt = obj.title;
+		ContentSumValute.src = "./assets/img/valute.svg";
+		ContentSumValute.alt = "rub";
+
+		TitleLink.href = "";
+		TitleLink.target = "_self";
+		ImageLink.href = "";
+		ImageLink.target = "_self";
+		ContentBtn.href = "";
+		ContentBtn.target = "_self";
+
+		ContentBtn.textContent = "Подробнее";
+		Title.textContent = obj.title;
+		TimeText.textContent = obj.duration;
+		ContentSumNumb.textContent = obj.actionPrice;
+		AdvElem.textContent = obj.adv;
 
 		TitleLink.appendChild(Title);
-		TimeText.textContent = obj.duration;
-
-		AdvElem.textContent = obj.adv;
+		ImageLink.appendChild(Image);
 		ImageBlock.appendChild(AdvElem);
 		ImageBlock.appendChild(ImageLink);
-		ImageLink.appendChild(Image);
 
 		TimeElem.appendChild(TimeIcon);
 		TimeElem.appendChild(TimeText);
@@ -180,10 +209,23 @@ function buildCards(data) {
 			ContentList.appendChild(ContentItem);
 		});
 
+		ContentSum.appendChild(ContentSumNumb);
+		ContentSum.appendChild(ContentSumValute);
+		ContentControlDesc.appendChild(ContentSum);
+		if (obj.normPrice) {
+			const ContentSumHint = document.createElement("div");
+			ContentSumHint.className = "content__sum-hint";
+			ContentSumHint.textContent = obj.normPrice + " ₽ " + obj.placeNormPrice;
+			ContentControlDesc.appendChild(ContentSumHint);
+		}
+		ContentControl.appendChild(ContentControlDesc);
+		ContentControl.appendChild(ContentBtn);
+
 		ContentDesc.appendChild(TitleBlock);
 		ContentDesc.appendChild(ContentList);
 
 		Content.appendChild(ContentDesc);
+		Content.appendChild(ContentControl);
 
 		CardElem.appendChild(ImageBlock);
 		CardElem.appendChild(Content);

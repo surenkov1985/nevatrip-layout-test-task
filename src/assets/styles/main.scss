@@ -62,13 +62,11 @@ body {
         }
 
         & img {
-            // border-radius: 16px 16px 0 0;
             width: 100%;
             object-fit: cover;
 
             @media (min-width: 900px) {
                 height: 100%;
-                // border-radius: 16px 0 0 16px;
             }
         }
     }
@@ -106,7 +104,6 @@ body {
     &__title-block {
         display: flex;
         flex-direction: column;
-
 
         @media (min-width: 900px) {
             flex-direction: column-reverse;
@@ -165,7 +162,6 @@ body {
 
         @media (min-width: 900px) {
             font-size: 18px;
-
         }
     }
 
@@ -175,7 +171,6 @@ body {
 
         @media (min-width: 900px) {
             font-size: 18px;
-
         }
 
         &>span {
@@ -184,7 +179,6 @@ body {
 
             @media (min-width: 900px) {
                 font-size: 18px;
-
             }
         }
     }
@@ -205,17 +199,15 @@ body {
                 text-decoration: underline;
                 color: #6BA6FF;
             }
-
         }
 
         @media (min-width: 900px) {
+            margin-top: 0;
 
             &>h2 {
                 font-size: 24px;
                 line-height: 34px;
             }
-
-            margin-top: 0;
         }
     }
 
@@ -253,7 +245,6 @@ body {
 
         @media (min-width: 900px) {
             row-gap: 7px;
-
         }
     }
 
@@ -267,7 +258,16 @@ body {
 
             @media (min-width: 900px) {
                 width: 20px;
+            }
+        }
 
+        &>img {
+            width: 15px;
+            height: 20px;
+
+            @media (min-width: 900px) {
+                width: 19px;
+                height: 30px;
             }
         }
     }
@@ -278,7 +278,6 @@ body {
 
         @media (min-width: 900px) {
             font-size: 36px;
-
         }
     }
 
@@ -287,9 +286,7 @@ body {
 
         @media (min-width: 900px) {
             font-size: 14px;
-
         }
-
     }
 
     &__btn {
@@ -305,7 +302,6 @@ body {
         text-overflow: ellipsis;
         text-decoration: none;
         color: #000000;
-
 
         &:hover {
             background: #e7bc00;
@@ -332,7 +328,6 @@ body {
 
         @media (min-width: 900px) {
             gap: 6px;
-
         }
     }
 
@@ -343,13 +338,7 @@ body {
         color: #343434;
         cursor: pointer;
         text-decoration: none;
-        visibility: visible;
         position: relative;
-
-        &.visible {
-            visibility: hidden;
-        }
-
 
         &:hover {
             background: #6BA6FF;
@@ -361,13 +350,6 @@ body {
             font-size: 16px;
             padding: 6px 16px;
             border-radius: 12px;
-            // height: 28px;
-
-            &.visible {
-                visibility: hidden;
-                // height: 0;
-                // display: block;
-            }
         }
     }
 
@@ -377,7 +359,6 @@ body {
         top: 0;
         width: 100%;
         height: 100%;
-        // padding: 4px 14px;
         border-radius: 11px;
         background: #D9E8FF;
         color: #343434;
@@ -385,7 +366,6 @@ body {
         text-decoration: none;
         border: none;
         z-index: 10;
-
 
         &:hover {
             background: #6BA6FF;
@@ -397,9 +377,6 @@ body {
             font-size: 16px;
             padding: 6px 16px;
             border-radius: 12px;
-
         }
-
     }
-
 }
