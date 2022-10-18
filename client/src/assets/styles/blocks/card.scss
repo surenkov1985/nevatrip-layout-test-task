@@ -1,0 +1,49 @@
+.card {
+    width: 100%;
+    border: 1px solid $BorderColor;
+    border-radius: 16px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: $TabWidth) {
+        flex-direction: row;
+        border-radius: 20px;
+    }
+
+    &__img {
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        overflow: hidden;
+
+        @media (min-width: $TabWidth) {
+            width: 83%;
+            border-radius: 20px 0 0 20px;
+        }
+
+        & img {
+            width: 100%;
+            object-fit: cover;
+
+            @media (min-width: $TabWidth) {
+                height: 100%;
+            }
+        }
+    }
+
+    &__img-adv {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 12px 37px;
+        border-radius: 16px 0 16px 0;
+        background: $BtnColor;
+        cursor: pointer;
+
+        @media (min-width: $TabWidth) {
+            border-radius: 20px 0 20px 0;
+            font-size: $DesctopFS;
+            font-weight: 600;
+        }
+    }
+}

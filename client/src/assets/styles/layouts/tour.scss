@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+@import "../utils/variables.scss";
+
+// @import "../blocks/container.scss";
+
+* {
+    font-family: $MyFontFamily;
+    font-size: $DefaultFS;
+    line-height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+}
+
+body {
+    width: 100%;
+    min-width: $MobileWidth;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    padding: 25px 16px;
+
+    @media (min-width: $TabWidth) {
+        padding: 50px 16px;
+    }
+
+    @media (min-width: $DesctopWidth) {
+        max-width: 1102px;
+    }
+
+    &__link {
+        text-decoration: none;
+        color: $TimeTableTextColor;
+
+        &:hover {
+            text-decoration: underline;
+            color: $TimeTableHoverColor;
+        }
+    }
+}
+
+.tour {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 50px;
+
+    &__titleBlock {
+        width: 100%;
+    }
+
+    &__title {
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+
+        @media (min-width: $TabWidth) {
+            font-size: 24px;
+        }
+    }
+
+    &__img-block {
+        width: 100%;
+        height: 300px;
+
+        @media (min-width: $TabWidth) {
+            height: 500px;
+        }
+    }
+
+    &__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    &__time-block {
+        display: flex;
+        align-items: center;
+        column-gap: 15px;
+    }
+
+    &__time-icon-block {
+        width: 25px;
+
+        &>img {
+            width: 100%;
+        }
+    }
+
+    &__time-text {
+        font-size: 18px;
+        color: $TimeTextColor;
+    }
+
+
+}

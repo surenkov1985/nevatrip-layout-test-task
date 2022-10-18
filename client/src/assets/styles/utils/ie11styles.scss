@@ -1,0 +1,110 @@
+@media all and (-ms-high-contrast: none),
+(-ms-high-contrast: active) {
+    .card {
+        &:not(:last-child) {
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: $TabWidth) {
+            &:not(:last-child) {
+                margin-bottom: 60px;
+            }
+        }
+
+        @media (min-width: $DesctopWidth) {
+            width: 1086px;
+        }
+
+        &__img {
+
+            @media all and (-ms-high-contrast: none),
+            (-ms-high-contrast: active) {
+
+                @media (min-width: $TabWidth) {
+                    min-width: 400px;
+                }
+            }
+
+
+
+        }
+    }
+
+    .content {
+
+        &__time {
+
+            @media (min-width: $TabWidth) {
+                margin-top: 13px;
+            }
+
+            &>svg {
+                margin-right: 9px;
+            }
+        }
+
+        &__item {
+
+            &:not(:first-child) {
+                margin-top: 15px;
+
+                @media (min-width: $TabWidth) {
+                    margin-top: 17px;
+                }
+            }
+        }
+
+        &__arr-icon {
+            margin-right: 20px;
+
+            @media (min-width: $TabWidth) {
+                margin-right: 14px;
+            }
+        }
+
+        &__item-text-timetable {
+            margin-right: 10px;
+
+            @media (min-width: $TabWidth) {
+                margin-right: 8px;
+                margin-bottom: 8px;
+            }
+        }
+
+        &__control {
+            margin-top: 30px;
+
+            @media (min-width: $TabWidth) {
+                margin-top: 18px;
+            }
+        }
+
+        &__control-desc {
+            margin-right: 13px;
+        }
+
+        &__item-timetable {
+            width: 100%;
+        }
+
+
+    }
+
+    .timetable {
+
+        &__item {
+            margin-right: 5px;
+            margin-bottom: 5px;
+
+            @media (min-width: $TabWidth) {
+                margin-right: 6px;
+                margin-bottom: 6px;
+            }
+        }
+
+        &__more {
+            display: none;
+        }
+    }
+
+}

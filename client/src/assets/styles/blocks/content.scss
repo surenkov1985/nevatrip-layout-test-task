@@ -1,0 +1,229 @@
+.content {
+    padding: 14px 11px 17px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+    row-gap: 35px;
+    width: 100%;
+
+    @media (min-width: $TabWidth) {
+        padding: 16px 23px 25px;
+        row-gap: 24px;
+    }
+
+    &__title-block {
+        display: flex;
+        flex-direction: column;
+
+        @media (min-width: $TabWidth) {
+            flex-direction: column-reverse;
+            gap: 13px;
+        }
+    }
+
+    &__time {
+        display: flex;
+        align-items: center;
+        column-gap: 9px;
+
+        &>svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &__time-text {
+        color: $TimeTextColor;
+        font-size: $TimeFS;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        row-gap: 15px;
+        margin-top: 18px;
+
+        @media (min-width: $TabWidth) {
+            row-gap: 17px;
+            margin-top: 14px;
+        }
+    }
+
+    &__item {
+        display: flex;
+        align-items: baseline;
+        column-gap: 20px;
+
+        @media (min-width: $TabWidth) {
+            column-gap: 14px;
+        }
+    }
+
+    &__arr-icon {
+        width: 16px;
+
+        &>svg {
+            width: 100%;
+        }
+    }
+
+    &__item-text {
+        line-height: 20px;
+
+        @media (min-width: $TabWidth) {
+            font-size: $BtnFS;
+        }
+    }
+
+    &__item-text-timetable {
+        line-height: 20px;
+        white-space: nowrap;
+
+        @media (min-width: $TabWidth) {
+            font-size: $BtnFS;
+        }
+
+        &>span {
+            line-height: 20px;
+            white-space: nowrap;
+
+            @media (min-width: $TabWidth) {
+                font-size: $BtnFS;
+            }
+        }
+    }
+
+    &__title {
+        margin-top: 13px;
+        text-decoration: none;
+
+        &>h2 {
+            line-height: 22px;
+            font-weight: 600;
+            color: $DefaultColor;
+        }
+
+        &:hover {
+
+            &>h2 {
+                text-decoration: underline;
+                color: $TimeTableHoverColor;
+            }
+        }
+
+        @media (min-width: $TabWidth) {
+            margin-top: 0;
+
+            &>h2 {
+                font-size: $DesctopTitleFS;
+                line-height: 34px;
+            }
+        }
+    }
+
+    &__item-timetable {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        @media (min-width: $TabWidth) {
+            flex-direction: row;
+            gap: 8px;
+        }
+    }
+
+    &__control {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 7px;
+        column-gap: 13px;
+
+        @media (min-width: $TabWidth) {
+            font-size: $DefaultFS;
+            justify-content: flex-start;
+            padding: 0 0;
+            column-gap: 13px;
+        }
+    }
+
+    &__control-desc {
+        display: flex;
+        flex-direction: column;
+        row-gap: 2px;
+        max-width: 240px;
+
+        @media (min-width: $TabWidth) {
+            row-gap: 7px;
+        }
+    }
+
+    &__sum {
+        display: flex;
+        align-items: center;
+        column-gap: 6px;
+
+        &>svg {
+            width: 15px;
+
+            @media (min-width: $TabWidth) {
+                width: 20px;
+            }
+        }
+
+        &>img {
+            width: 15px;
+            height: 20px;
+
+            @media (min-width: $TabWidth) {
+                width: 19px;
+                height: 30px;
+            }
+        }
+    }
+
+    &__sum-numb {
+        font-size: $NumbFS;
+        line-height: 20px;
+
+        @media (min-width: $TabWidth) {
+            font-size: $DesctopNumbFS;
+        }
+    }
+
+    &__sum-hint {
+        font-size: $HintFS;
+
+        @media (min-width: $TabWidth) {
+            font-size: $DefaultFS;
+        }
+    }
+
+    &__btn {
+        padding: 14px 44px;
+        display: block;
+        background: $BtnColor;
+        border: 1px solid $BtnColor;
+        border-radius: 20px;
+        cursor: pointer;
+        max-width: 200px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+        color: $DefaultColor;
+
+        &:hover {
+            background: $BtnHoverColor;
+            border: 1px solid $BtnHoverColor;
+            box-shadow: 0px 2px 4px rgba($DefaultColor, 0.25);
+        }
+
+        @media (min-width: $TabWidth) {
+            font-size: $BtnFS;
+            padding: 16px 44px;
+            max-width: 250px;
+        }
+    }
+}
