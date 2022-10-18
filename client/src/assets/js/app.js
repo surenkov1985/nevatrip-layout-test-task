@@ -19,48 +19,50 @@ function setTimesWidth() {
 	visibleBtn.textContent = "еще...";
 
 	for (let item of CardContent) {
-		const TimetableList = item.querySelector(".timetable__list");
-		const TimetableItems = item.querySelectorAll(".timetable__item");
-		const TimetableItemMore = TimetableList.querySelector(".timetable__more");
+		if (item.querySelector(".timetable__list")) {
+			const TimetableList = item.querySelector(".timetable__list");
+			const TimetableItems = item.querySelectorAll(".timetable__item");
+			const TimetableItemMore = TimetableList.querySelector(".timetable__more");
 
-		let lastVisibleIndex = 0;
-
-		for (let ind = 0; ind < TimetableItems.length; ind++) {
-			let item = TimetableItems[ind];
-
-			item.style.display = "block";
-
-			if (item.getBoundingClientRect().y > TimetableList.getBoundingClientRect().y) {
-				item.style.display = "none";
-
-				if (!lastVisibleIndex && ind > 0) lastVisibleIndex = ind - 1;
-			}
-		}
-
-		if (lastVisibleIndex && lastVisibleIndex > 0 && TimetableItemMore) {
-			TimetableItems[lastVisibleIndex].style.display = "none";
-			TimetableItemMore.style.display = "block";
-
-			if (
-				TimetableItemMore.getBoundingClientRect().y >
-				TimetableList.getBoundingClientRect().y + TimetableItems[lastVisibleIndex].offsetHeight
-			) {
-				if (lastVisibleIndex - 1 > 0) {
-					TimetableItems[lastVisibleIndex - 1].style.display = "none";
-				}
-			}
-		}
-
-		TimetableItemMore.addEventListener("click", function (e) {
-			e.preventDefault();
+			let lastVisibleIndex = 0;
 
 			for (let ind = 0; ind < TimetableItems.length; ind++) {
 				let item = TimetableItems[ind];
 
 				item.style.display = "block";
-				TimetableItemMore.style.display = "none";
+
+				if (item.getBoundingClientRect().y > TimetableList.getBoundingClientRect().y) {
+					item.style.display = "none";
+
+					if (!lastVisibleIndex && ind > 0) lastVisibleIndex = ind - 1;
+				}
 			}
-		});
+
+			if (lastVisibleIndex && lastVisibleIndex > 0 && TimetableItemMore) {
+				TimetableItems[lastVisibleIndex].style.display = "none";
+				TimetableItemMore.style.display = "block";
+
+				if (
+					TimetableItemMore.getBoundingClientRect().y >
+					TimetableList.getBoundingClientRect().y + TimetableItems[lastVisibleIndex].offsetHeight
+				) {
+					if (lastVisibleIndex - 1 > 0) {
+						TimetableItems[lastVisibleIndex - 1].style.display = "none";
+					}
+				}
+			}
+
+			TimetableItemMore.addEventListener("click", function (e) {
+				e.preventDefault();
+
+				for (let ind = 0; ind < TimetableItems.length; ind++) {
+					let item = TimetableItems[ind];
+
+					item.style.display = "block";
+					TimetableItemMore.style.display = "none";
+				}
+			});
+		}
 	}
 }
 
@@ -89,7 +91,6 @@ function getdata() {
 			return res.json();
 		})
 		.then(function (data) {
-			console.log(data);
 			buildCards(data);
 		})
 		.catch(function (error) {
@@ -104,19 +105,7 @@ function setLinksListener() {
 		Link.addEventListener("click", function (e) {
 			e.preventDefault();
 
-			console.log(Link.href);
-
-			location.href = Link.href;
-			// fetch(Link.href, { method: "GET", headers: { "Content-type": "application/json" } })
-			// 	.then(function (res) {
-			// 		return res.json();
-			// 	})
-			// 	.then(function (data) {
-			// 		console.log(data);
-			// 	})
-			// 	.catch(function (error) {
-			// 		console.log(error);
-			// 	});
+			if (!Link.classList.contains("timetable__more")) location.href = Link.href;
 		});
 	}
 }
@@ -174,9 +163,29 @@ function buildCards(data) {
 		ContentBtn.href = "./tour.html?id=" + obj.id;
 		ContentBtn.target = "_self";
 
+		const durationTime = obj.duration.split(":");
+		let huorText = "";
+		let minText = "";
+		if (parseInt(durationTime[0]) === 1 || (parseInt(durationTime[0]) - 1) % 10 === 0) {
+			huorText = " час ";
+		} else if (/[2-4]$/.test(durationTime[0])) {
+			huorText = " часа ";
+		} else if (/[5-90]$/.test(durationTime[0])) {
+			huorText = " часа ";
+		}
+		if (parseInt(durationTime[1]) === 1 || (parseInt(durationTime[1]) - 1) % 10 === 0) {
+			minText = " минута";
+		} else if (/[2-4]$/.test(durationTime[1])) {
+			minText = " минуты";
+		} else if (/[5-90]$/.test(durationTime[1])) {
+			minText = " минут";
+		}
+		const hour = parseInt(durationTime[0]) ? parseInt(durationTime[0]) + huorText : "";
+		const min = parseInt(durationTime[1]) ? durationTime[1] + minText : "";
+
 		ContentBtn.textContent = "Подробнее";
 		Title.textContent = obj.title;
-		TimeText.textContent = obj.duration;
+		TimeText.textContent = hour + min;
 		ContentSumNumb.textContent = obj.action_price;
 		AdvElem.textContent = obj.adv;
 
@@ -226,52 +235,72 @@ function buildCards(data) {
 
 				ContentTimeableBlock.appendChild(ContentTimeableText);
 
-				const flightDate = obj.flight_dates[0];
+				let flightDate = obj.flight_dates[0];
+				console.log(flightDate);
 				const date = new Date();
+
+				let firstTimetable = flightDate.date + " " + flightDate.times[0];
+
+				const timeZoneSec = -date.getTimezoneOffset() * 60000;
+				const timeZoneDefault = obj.time_zone * 60000;
 				const today = new Date(date.toISOString().slice(0, 10));
-				const resDate = new Date(flightDate.date);
+				const resDate = new Date(firstTimetable);
+				let DateTime = resDate.getTime();
+				let UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				console.log(UTCDate.toLocaleTimeString());
 				const TimeableDate = document.createElement("span");
 				TimeableDate.className = "timetable__date";
 
-				if (today === resDate) {
+				if (today.toLocaleDateString() === UTCDate.toLocaleDateString()) {
 					TimeableDate.textContent = "сегодня";
-				} else if (today < resDate) {
-					TimeableDate.textContent = resDate.toLocaleDateString();
+				} else if (today.toLocaleDateString() < UTCDate.toLocaleDateString()) {
+					TimeableDate.textContent = UTCDate.toLocaleDateString();
 				} else {
 					let newDate;
-					for (let item of obj.flight_dates) {
-						let date = new Date(item.date);
 
-						if (date.toLocaleDateString() == today.toLocaleDateString()) {
+					for (let item of obj.flight_dates) {
+						firstTimetable = item.date + " " + item.times[0];
+						let date = new Date(firstTimetable);
+						DateTime = date.getTime();
+						UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+						if (UTCDate.toLocaleDateString() == today.toLocaleDateString()) {
 							newDate = item;
 						}
 					}
 
-					let resDate = new Date(newDate.date);
-					TimeableDate.textContent = resDate.toLocaleDateString();
+					if (newDate) {
+						TimeableDate.textContent = "сегодня";
+						flightDate = newDate;
+					}
 				}
 				ContentTimeableText.appendChild(TimeableDate);
+				if (TimeableDate.textContent) {
+					flightDate.times.map(function (res) {
+						firstTimetable = flightDate.date + " " + res;
+						let date = new Date(firstTimetable);
+						DateTime = date.getTime();
+						UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+						let time = UTCDate.toLocaleTimeString().slice(0, 5);
 
-				flightDate.times.map(function (res) {
-					const TimeableItem = document.createElement("a");
-					TimeableItem.href = "./tour.html?id=" + obj.id;
-					TimeableItem.target = "_self";
-					TimeableItem.className = "timetable__item";
-					TimeableItem.textContent = res;
+						const TimeableItem = document.createElement("a");
+						TimeableItem.href = "./tour.html?id=" + obj.id;
+						TimeableItem.target = "_self";
+						TimeableItem.className = "timetable__item";
+						TimeableItem.textContent = time;
 
-					if (res) {
-						TimeableList.appendChild(TimeableItem);
-					}
-				});
-				const TimeableItemMore = document.createElement("a");
-				TimeableItemMore.href = "";
-				TimeableItemMore.target = "_self";
-				TimeableItemMore.className = "timetable__item timetable__more";
-				TimeableItemMore.textContent = "...ещё";
-				TimeableItemMore.style.display = "none";
-				TimeableList.appendChild(TimeableItemMore);
-
-				ContentTimeableBlock.appendChild(TimeableList);
+						if (res) {
+							TimeableList.appendChild(TimeableItem);
+						}
+					});
+					const TimeableItemMore = document.createElement("a");
+					TimeableItemMore.href = "";
+					TimeableItemMore.target = "_self";
+					TimeableItemMore.className = "timetable__item timetable__more";
+					TimeableItemMore.textContent = "...ещё";
+					TimeableItemMore.style.display = "none";
+					TimeableList.appendChild(TimeableItemMore);
+					ContentTimeableBlock.appendChild(TimeableList);
+				}
 
 				ContentItem.appendChild(ContentIconBlock);
 				ContentItem.appendChild(ContentTimeableBlock);

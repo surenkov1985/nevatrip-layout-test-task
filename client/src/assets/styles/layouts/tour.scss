@@ -16,9 +16,147 @@
 body {
     width: 100%;
     min-width: $MobileWidth;
+    overflow-x: hidden;
+}
+
+#wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.modal {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    display: none;
+    z-index: 10;
+
+    &__close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        border: none;
+        background: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        &>svg {
+            width: 20px;
+            height: 20px;
+
+            & path {
+                fill: $TimeTextColor;
+            }
+        }
+    }
+
+    &.visible {
+        display: flex;
+    }
+
+    &__background {
+        width: 100%;
+        height: 100%;
+        background: rgba($DefaultColor, 0.6);
+    }
+
+    &__container {
+        width: 90%;
+        max-width: 500px;
+        position: absolute;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: $BtnHoverTextColor;
+        z-index: 20;
+        border-radius: 16px;
+    }
+
+    &__title {
+        font-size: 18px;
+        text-align: center;
+
+        @media (min-width: $TabWidth) {
+            font-size: 24px;
+        }
+    }
+
+
+}
+
+.form {
+    width: 100%;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 20px;
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        row-gap: 10px;
+        width: 100%;
+
+        @media (min-width: $TabWidth) {
+            min-width: 450px;
+        }
+    }
+
+    &__item-title {
+        font-weight: 600;
+
+        @media (min-width: $TabWidth) {
+            font-size: 16px;
+        }
+    }
+
+    &__submit {
+        padding: 14px 44px;
+        display: block;
+        background: $BtnColor;
+        border: 1px solid $BtnColor;
+        border-radius: 20px;
+        cursor: pointer;
+        max-width: 200px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+        color: $DefaultColor;
+
+        &:hover {
+            background: $BtnHoverColor;
+            border: 1px solid $BtnHoverColor;
+            box-shadow: 0px 2px 4px rgba($DefaultColor, 0.25);
+        }
+
+        @media (min-width: $TabWidth) {
+            font-size: $BtnFS;
+            padding: 16px 44px;
+            max-width: 250px;
+        }
+    }
+}
+
+select,
+input {
+    width: 100%;
+    outline: none;
+    padding: 10px;
+    border: 1px solid $BorderColor;
+    border-radius: 8px;
 }
 
 .container {
@@ -56,7 +194,7 @@ body {
     }
 
     &__title {
-        font-size: 16px;
+        font-size: 18px;
         font-weight: 600;
         text-align: center;
 
@@ -87,17 +225,134 @@ body {
     }
 
     &__time-icon-block {
-        width: 25px;
+        width: 20px;
 
         &>img {
             width: 100%;
         }
+
+        @media (min-width: $TabWidth) {
+            width: 25px;
+        }
     }
 
     &__time-text {
-        font-size: 18px;
+        font-size: 16px;
         color: $TimeTextColor;
+
+        @media (min-width: $TabWidth) {
+            font-size: 18px;
+        }
+    }
+
+    &__time-desc {
+        color: $TimeTableTextColor;
+        font-weight: 600;
+
+        @media (min-width: $TabWidth) {
+            font-size: 16px;
+        }
+    }
+
+    &__time-duration {
+        color: $TimeTextColor;
+
+        @media (min-width: $TabWidth) {
+            font-size: 16px;
+        }
+    }
+
+    &__desc-title {
+        font-size: 16px;
+
+        @media (min-width: $TabWidth) {
+            font-size: 20px;
+        }
+    }
+
+    &__desc {
+        margin-top: 20px;
     }
 
 
+
+    &__btn {
+        padding: 14px 44px;
+        display: block;
+        background: $BtnColor;
+        border: 1px solid $BtnColor;
+        border-radius: 20px;
+        cursor: pointer;
+        max-width: 200px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+        color: $DefaultColor;
+
+        &:hover {
+            background: $BtnHoverColor;
+            border: 1px solid $BtnHoverColor;
+            box-shadow: 0px 2px 4px rgba($DefaultColor, 0.25);
+        }
+
+        @media (min-width: $TabWidth) {
+            font-size: $BtnFS;
+            padding: 16px 44px;
+            max-width: 250px;
+        }
+    }
+}
+
+.timetable {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+
+    &__title {
+        font-size: 16px;
+
+        @media (min-width: $TabWidth) {
+            font-size: 20px;
+        }
+    }
+
+    &__date {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+
+        @media (min-width: $TabWidth) {
+            gap: 5px;
+        }
+    }
+
+    &__date-text {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    &__item {
+        padding: 4px 14px;
+        border-radius: 11px;
+        background: $TimeTableColor;
+        color: $TimeTableTextColor;
+        cursor: pointer;
+        text-decoration: none;
+        position: relative;
+        border: none;
+
+        &:hover {
+            background: $TimeTableHoverColor;
+            box-shadow: 0px 2px 4px rgba($DefaultColor, 0.25);
+            color: $BtnHoverTextColor;
+        }
+
+        @media (min-width: $TabWidth) {
+            font-size: $DesctopFS;
+            padding: 6px 16px;
+            border-radius: 12px;
+        }
+    }
 }
