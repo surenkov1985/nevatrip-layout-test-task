@@ -3,9 +3,14 @@
 const Url = "http://localhost:5000";
 
 const CardContainer = document.querySelector(".container");
+const OnCodeButton = document.querySelector(".onCode");
 
-CardContainer.innerHTML = "";
-getdata();
+OnCodeButton.addEventListener("click", function () {
+	CardContainer.innerHTML = "";
+	getdata();
+});
+
+setTimesWidth();
 
 window.addEventListener("resize", function (e) {
 	setTitleWidth();
@@ -239,7 +244,7 @@ function buildCards(data) {
 				console.log(flightDate);
 				const date = new Date();
 
-				let firstTimetable = flightDate.date + " " + flightDate.times[0];
+				let firstTimetable = flightDate.date + " " + flightDate.times[0].time.slice(0, 5);
 
 				const timeZoneSec = -date.getTimezoneOffset() * 60000;
 				const timeZoneDefault = obj.time_zone * 60000;
@@ -259,7 +264,7 @@ function buildCards(data) {
 					let newDate;
 
 					for (let item of obj.flight_dates) {
-						firstTimetable = item.date + " " + item.times[0];
+						firstTimetable = item.date + " " + item.times[0].time;
 						let date = new Date(firstTimetable);
 						DateTime = date.getTime();
 						UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
@@ -276,7 +281,7 @@ function buildCards(data) {
 				ContentTimeableText.appendChild(TimeableDate);
 				if (TimeableDate.textContent) {
 					flightDate.times.map(function (res) {
-						firstTimetable = flightDate.date + " " + res;
+						firstTimetable = flightDate.date + " " + res.time;
 						let date = new Date(firstTimetable);
 						DateTime = date.getTime();
 						UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);

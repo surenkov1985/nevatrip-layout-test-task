@@ -39,3 +39,74 @@ body {
     overflow-x: auto;
     border: 1px solid #000000;
 }
+
+.onCode {
+    padding: 14px 44px;
+    display: block;
+    background: $BtnColor;
+    border: 1px solid $BtnColor;
+    border-radius: 20px;
+    cursor: pointer;
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    color: $DefaultColor;
+
+    &:hover {
+        background: $BtnHoverColor;
+        border: 1px solid $BtnHoverColor;
+        box-shadow: 0px 2px 4px rgba($DefaultColor, 0.25);
+    }
+
+    @media (min-width: $TabWidth) {
+        font-size: $BtnFS;
+        padding: 16px 44px;
+        max-width: 250px;
+    }
+}
+
+.line {
+    width: 100%;
+    border: 1px solid $BorderColor;
+    margin: 30px 0;
+}
+
+.table-task {
+    width: 100%;
+    padding: 25px 16px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 30px;
+
+    @media (min-width: $TabWidth) {
+        row-gap: 60px;
+        padding: 50px 16px;
+    }
+
+    @media (min-width: $DesctopWidth) {
+        max-width: 1102px;
+    }
+
+}
+
+.table-title {
+    font-size: $BtnFS;
+    line-height: 22px;
+    font-weight: 600;
+    color: $DefaultColor;
+
+    @media (min-width: $TabWidth) {
+        font-size: $DesctopTitleFS;
+        line-height: 34px;
+    }
+}
+
+.table-desc {
+    font-size: $DesctopFS;
+
+    @media (min-width: $TabWidth) {
+        font-size: $BtnFS;
+    }
+}

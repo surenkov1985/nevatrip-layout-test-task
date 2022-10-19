@@ -44,26 +44,13 @@ function buildCard(data) {
 		TimetableDateTitle = document.createElement("p");
 
 	const durationTime = data.duration.split(":");
-	let huorText = "";
-	let minText = "";
-	if (parseInt(durationTime[0]) === 1 || (parseInt(durationTime[0]) - 1) % 10 === 0) {
-		huorText = " час ";
-	} else if (/[2-4]$/.test(durationTime[0])) {
-		huorText = " часа ";
-	} else if (/[5-90]$/.test(durationTime[0])) {
-		huorText = " часа ";
-	}
-	if (parseInt(durationTime[1]) === 1 || (parseInt(durationTime[1]) - 1) % 10 === 0) {
-		minText = " минута";
-	} else if (/[2-4]$/.test(durationTime[1])) {
-		minText = " минуты";
-	} else if (/[5-90]$/.test(durationTime[1])) {
-		minText = " минут";
-	}
+
+	let minute = durationTime[0] * 60 + parseInt(durationTime[1]);
+	let duration = getTimeString(minute);
 
 	let flightDate = data.flight_dates[0];
 	const date = new Date();
-	let firstTimetable = flightDate.date + " " + flightDate.times[0];
+	let firstTimetable = flightDate.date + " " + flightDate.times[0].time;
 
 	const timeZoneSec = -date.getTimezoneOffset() * 60000;
 	const timeZoneDefault = data.time_zone * 60000;
@@ -83,7 +70,7 @@ function buildCard(data) {
 		let newDate;
 
 		for (let item of data.flight_dates) {
-			firstTimetable = item.date + " " + item.times[0];
+			firstTimetable = item.date + " " + item.times[0].time;
 			let date = new Date(firstTimetable);
 			DateTime = date.getTime();
 			UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
@@ -97,13 +84,11 @@ function buildCard(data) {
 			flightDate = newDate;
 		}
 	}
-	const hour = parseInt(durationTime[0]) ? parseInt(durationTime[0]) + huorText : "";
-	const min = parseInt(durationTime[1]) ? durationTime[1] + minText : "";
 
 	BackLink.textContent = "Назад к списку экскурсий";
 	Title.textContent = data.title;
 	TimeTextDesc.textContent = "Продолжительность: ";
-	TimeTextDuration.textContent = hour + min;
+	TimeTextDuration.textContent = duration;
 	TourDescTitle.textContent = "Подробнее об экскурсии";
 	TourDesc.textContent = data.description;
 	BookTourBtn.textContent = "Забронировать";
@@ -140,7 +125,7 @@ function buildCard(data) {
 	if (TimetableDateTitle.textContent) {
 		TimetableDate.appendChild(TimetableDateTitle);
 		flightDate.times.map(function (res) {
-			firstTimetable = flightDate.date + " " + res;
+			firstTimetable = flightDate.date + " " + res.time.slice(0, 5);
 			let date = new Date(firstTimetable);
 			DateTime = date.getTime();
 			UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
@@ -151,7 +136,7 @@ function buildCard(data) {
 			TimeableItem.className = "timetable__item btn";
 			TimeableItem.textContent = time;
 
-			if (res) {
+			if (res.time) {
 				TimetableDate.appendChild(TimeableItem);
 			}
 		});
@@ -182,33 +167,42 @@ function buildCard(data) {
 
 	modalToggleListener();
 	setModalValues(data);
+	specialTicketsToggle();
+	getTotalsum(data);
 }
 
 function setModalValues(obj) {
 	const tourRoutes = ["Из A в B", "Из В в А", "Из A в B и обратно в А"];
 	let date;
-	let times = [];
+	let timeValue = "";
 	let data;
 	let backData;
+	let timeZoneSec;
+	let timeZoneDefault;
 	const DateSelect = document.querySelector(".form__date"),
 		RouteSelect = document.querySelector(".form__route"),
 		TimeSelect = document.querySelector(".form__time"),
-		BackTimeSelect = document.querySelector(".form__back-time");
-	(DateOption = document.createElement("option")), (RouteOption = document.createElement("option"));
+		BackTimeSelect = document.querySelector(".form__back-time"),
+		AdultPrice = document.querySelector(".adult"),
+		KidPrice = document.querySelector(".kid"),
+		PreferentialPrice = document.querySelector(".preferential"),
+		GroupPrice = document.querySelector(".group"),
+		DateOption = document.createElement("option");
 
 	DateOption.value = "";
-	RouteOption.value = "";
 	DateOption.textContent = "Выберите дату";
-	RouteOption.textContent = "Выберите направление";
+	AdultPrice.textContent = obj.action_price;
+	KidPrice.textContent = obj.ticket_kid_price;
+	PreferentialPrice.textContent = obj.ticket_preferential_price;
+	GroupPrice.textContent = obj.ticket_group_price;
 
 	DateSelect.appendChild(DateOption);
-	RouteSelect.appendChild(RouteOption);
 
 	for (item of obj.flight_dates) {
 		const today = new Date();
-		const timeZoneSec = -today.getTimezoneOffset() * 60000;
-		const timeZoneDefault = obj.time_zone * 60000;
-		let firstTimetable = item.date + " " + item.times[0];
+		timeZoneSec = -today.getTimezoneOffset() * 60000;
+		timeZoneDefault = obj.time_zone * 60000;
+		let firstTimetable = item.date + " " + item.times[0].time;
 		let date = new Date(firstTimetable);
 		let DateTime = date.getTime();
 		let UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
@@ -233,7 +227,6 @@ function setModalValues(obj) {
 	}
 
 	DateSelect.addEventListener("change", function () {
-		console.log(this.name, this.value);
 		date = this.value;
 	});
 	RouteSelect.addEventListener("change", function () {
@@ -242,56 +235,138 @@ function setModalValues(obj) {
 		Option.value = "";
 		Option.textContent = "Выберите время";
 		TimeSelect.appendChild(Option);
+
 		if (this.value === "Из A в B") {
 			data = obj.flight_dates.find((item) => item.date === date);
+			console.log(data, obj.flight_dates, date);
 			times = data.times;
-			console.log(times);
+
 			TimeSelect.innerHTML = "";
 			TimeSelect.appendChild(Option);
 			BackTimeSelect.style.display = "none";
 			TimeSelect.style.display = "block";
+			AdultPrice.textContent = obj.action_price;
+			KidPrice.textContent = obj.ticket_kid_price;
+			PreferentialPrice.textContent = obj.ticket_preferential_price;
+			GroupPrice.textContent = obj.ticket_group_price;
+
 			for (let time of data.times) {
+				firstTimetable = date + " " + time.time.slice(0, 5);
+				let newDate = new Date(firstTimetable);
+				DateTime = newDate.getTime();
+				UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
+
 				const Option = document.createElement("option");
 
-				Option.value = time + "(" + this.value + ")";
-				Option.textContent = time + "(" + this.value + ")";
+				Option.value = time.time + "(" + this.value + ")";
+				Option.textContent = newTime + "(" + this.value + ")";
 
 				TimeSelect.appendChild(Option);
 			}
 		} else if (this.value === "Из В в А") {
 			data = obj.back_flight_dates.find((item) => item.date === date);
+
 			BackTimeSelect.innerHTML = "";
 			BackTimeSelect.appendChild(Option);
 			BackTimeSelect.style.display = "block";
 			TimeSelect.style.display = "none";
+			AdultPrice.textContent = obj.action_price;
+			KidPrice.textContent = obj.ticket_kid_price;
+			PreferentialPrice.textContent = obj.ticket_preferential_price;
+			GroupPrice.textContent = obj.ticket_group_price;
+
 			for (let time of data.times) {
 				const Option = document.createElement("option");
 
-				Option.value = time + "(" + this.value + ")";
-				Option.textContent = time + "(" + this.value + ")";
+				firstTimetable = date + " " + time.time.slice(0, 5);
+				let newDate = new Date(firstTimetable);
+				DateTime = newDate.getTime();
+				UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
+
+				Option.value = time.time + "(" + this.value + ")";
+				Option.textContent = newTime + "(" + this.value + ")";
 
 				BackTimeSelect.appendChild(Option);
 			}
 		} else if (this.value === "Из A в B и обратно в А") {
 			data = obj.flight_dates.find((item) => item.date === date);
 			backData = obj.back_flight_dates.find((item) => item.date === date);
+
 			TimeSelect.innerHTML = "";
 			BackTimeSelect.style.display = "block";
 			TimeSelect.style.display = "block";
 			TimeSelect.appendChild(Option);
+			AdultPrice.textContent = obj.round_trip_price;
+			KidPrice.textContent = obj.round_trip_kid_price;
+			PreferentialPrice.textContent = obj.round_trip_preferential_price;
+			GroupPrice.textContent = obj.round_trip_group_price;
+
 			for (let time of data.times) {
+				firstTimetable = date + " " + time.time.slice(0, 5);
+				let newDate = new Date(firstTimetable);
+				DateTime = newDate.getTime();
+				UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
+
 				const Option = document.createElement("option");
 
-				Option.value = time + "(Из A в B)";
-				Option.textContent = time + "(Из A в B)";
+				Option.value = time.time + "(Из A в B)";
+				Option.textContent = newTime + "(Из A в B)";
 
 				TimeSelect.appendChild(Option);
 			}
+
+			TimeSelect.addEventListener("change", function (e) {
+				timeValue = e.target.selectedOptions[0].value;
+
+				BackTimeSelect.textContent = "";
+				BackTimeSelect.appendChild(Option);
+
+				for (let time of backData.times) {
+					if (!timeValue) {
+						firstTimetable = date + " " + time.time.slice(0, 5);
+					} else {
+						let startTime = new Date(data.date + " " + timeValue.slice(0, 5));
+						let duration = obj.duration.split(":");
+						let mSecDuration = (parseInt(duration[0]) * 60 + parseInt(duration[1])) * 60000;
+						let minBackTime = new Date(startTime.getTime() + mSecDuration);
+						let itemTime = new Date(date + " " + time.time.slice(0, 5));
+
+						if (itemTime > minBackTime) {
+							firstTimetable = date + " " + time.time.slice(0, 5);
+						} else {
+							firstTimetable = "";
+						}
+					}
+					if (firstTimetable) {
+						let newDate = new Date(firstTimetable);
+						DateTime = newDate.getTime();
+						UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+						let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
+
+						const Option = document.createElement("option");
+
+						Option.value = time.time + "(Из B в A)";
+						Option.textContent = newTime + "(Из B в A)";
+
+						BackTimeSelect.appendChild(Option);
+					}
+				}
+			});
+
 			for (let time of backData.times) {
+				firstTimetable = date + " " + time.time.slice(0, 5);
+				let newDate = new Date(firstTimetable);
+				DateTime = newDate.getTime();
+				UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
+
 				const Option = document.createElement("option");
 
-				Option.value = time + "(Из B в A)";
-				Option.textContent = time + "(Из B в A)";
+				Option.value = time.time + "(Из B в A)";
+				Option.textContent = newTime + "(Из B в A)";
 
 				BackTimeSelect.appendChild(Option);
 			}
@@ -322,4 +397,192 @@ function modalToggleListener() {
 	closeBtn.addEventListener("click", function (e) {
 		modal.classList.remove("visible");
 	});
+}
+
+function specialTicketsToggle() {
+	const formCheckbox = document.querySelectorAll(".form__checkbox");
+
+	for (let checkbox of formCheckbox) {
+		checkbox.addEventListener("click", function (e) {
+			const input = checkbox.getElementsByTagName("input");
+			if (input[0].checked) {
+				checkbox.nextElementSibling.style.display = "flex";
+			} else {
+				checkbox.nextElementSibling.style.display = "none";
+			}
+		});
+	}
+}
+
+function getTotalsum(data) {
+	const TotalSumBtn = document.querySelector(".form__total-sum-btn");
+
+	TotalSumBtn.addEventListener("click", function (e) {
+		e.preventDefault();
+
+		const TotalContainer = document.querySelector(".total"),
+			TotalForward = document.querySelector(".total__forward"),
+			TotalBack = document.querySelector(".total__back"),
+			TotalTransferText = document.querySelector(".total__transfer-text"),
+			Tickets = document.querySelector(".total__tickets"),
+			RouteEl = document.querySelector(".total__route"),
+			Duration = document.querySelector(".total__duration"),
+			Time = document.querySelector(".total__time"),
+			TimeArrival = document.querySelector(".total__time-arrival"),
+			BackTime = document.querySelector(".total__back-time"),
+			BackTimeArrival = document.querySelector(".total__back-time-arrival"),
+			Transfer = document.querySelector(".total__transfer"),
+			Price = document.querySelector(".total__price"),
+			AdultPrice = document.querySelector(".adult"),
+			KidPrice = document.querySelector(".kid"),
+			PreferentialPrice = document.querySelector(".preferential"),
+			GroupPrice = document.querySelector(".group");
+
+		const formData = new FormData(tourForm);
+		const FormTime = document.querySelector(".form__time"),
+			FormBackTime = document.querySelector(".form__back-time");
+		let duration;
+		let min;
+		let transfer;
+		let date = new Date(formData.get("date"));
+		const formObj = {
+			date: formData.get("date"),
+			duration: data.duration,
+			route: formData.get("route"),
+			time: formData.get("time"),
+			back_time: formData.get("back_time"),
+			ticket_adult_quantity: formData.get("ticket_adult_quantity"),
+			action_price: AdultPrice.textContent,
+			ticket_kid_quantity: formData.get("ticket_kid_quantity"),
+			ticket_kid_price: KidPrice.textContent,
+			ticket_preferential_quantity: formData.get("ticket_preferential_quantity"),
+			ticket_preferential_price: PreferentialPrice.textContent,
+			ticket_group_quantity: formData.get("ticket_grop_quantity"),
+			ticket_group_price: GroupPrice.textContent,
+		};
+
+		if (formObj.route === "Из A в B и обратно в А") {
+			let date = new Date(formObj.date + " " + formObj.time.match(/\d\d:\d\d/)[0]);
+			let backDate = new Date(formObj.date + " " + formObj.back_time.match(/\d\d:\d\d/)[0]);
+			let timeArr = formObj.duration.split(":");
+			let minTransfer = (backDate.getTime() - (date.getTime() + (parseInt(timeArr[0]) * 60 + parseInt(timeArr[1])) * 60000)) / 60000;
+			let minSum = parseInt(timeArr[0]) * 60 * 2 + parseInt(timeArr[1]) * 2;
+
+			console.log(minTransfer);
+
+			transfer = getTimeString(minTransfer);
+			duration = getTimeString(minSum);
+		} else {
+			let timeArr = formObj.duration.split(":");
+			min = parseInt(timeArr[0]) * 60 + parseInt(timeArr[1]);
+
+			duration = getTimeString(min);
+		}
+
+		let total_price =
+			+formObj.action_price * +formObj.ticket_adult_quantity +
+			+formObj.ticket_kid_quantity * +formObj.ticket_kid_price +
+			+formObj.ticket_preferential_quantity * +formObj.ticket_preferential_price +
+			+formObj.ticket_group_quantity * +formObj.ticket_group_price;
+
+		const TotalData = {
+			duration: duration,
+			totalPrice: total_price || 0,
+			date: date.toLocaleDateString(),
+			time: FormTime.value ? FormTime.value.match(/\d\d:\d\d/)[0] : "",
+			back_time: FormBackTime.value ? FormBackTime.value.match(/\d\d:\d\d/)[0] : "",
+			route: formObj.route,
+			tickets: getTicketsString(
+				parseInt(
+					+formObj.ticket_adult_quantity +
+						+formObj.ticket_kid_quantity +
+						+formObj.ticket_preferential_quantity +
+						+formObj.ticket_group_quantity
+				) || 0
+			),
+			transfer: transfer,
+		};
+
+		let timeArr = TotalData.time.split(":");
+		let durationArr = formObj.duration.split(":");
+		let minutes = parseInt(timeArr[0]) * 60 + parseInt(timeArr[1]) + parseInt(durationArr[0]) * 60 + parseInt(durationArr[1]);
+		let timeArrival = String(Math.trunc(minutes / 60)) + ":" + String(minutes % 60);
+
+		let backTimeArr = TotalData.back_time.split(":");
+		let backMinutes = parseInt(backTimeArr[0]) * 60 + parseInt(backTimeArr[1]) + parseInt(durationArr[0]) * 60 + parseInt(durationArr[1]);
+		let backTimeArrival = String(Math.trunc(backMinutes / 60)) + ":" + String(backMinutes % 60);
+
+		Tickets.textContent = TotalData.tickets;
+		RouteEl.textContent = TotalData.route;
+		Duration.textContent = TotalData.duration;
+		Transfer.textContent = TotalData.transfer;
+		Price.textContent = TotalData.totalPrice;
+
+		if (TotalData.time && TotalData.back_time) {
+			Time.textContent = TotalData.date + " в " + TotalData.time;
+			TimeArrival.textContent = TotalData.date + " в " + timeArrival;
+			BackTime.textContent = TotalData.date + " в " + TotalData.back_time;
+			BackTimeArrival.textContent = TotalData.date + " в " + backTimeArrival;
+
+			TotalForward.style.display = "block";
+			TotalBack.style.display = "block";
+			TotalTransferText.style.display = "block";
+		} else if (TotalData.time && !TotalData.back_time) {
+			Time.textContent = TotalData.date + " в " + TotalData.time;
+			TimeArrival.textContent = TotalData.date + " в " + timeArrival;
+
+			TotalForward.style.display = "block";
+			TotalBack.style.display = "none";
+			TotalTransferText.style.display = "none";
+		} else if (!TotalData.time && TotalData.back_time) {
+			BackTime.textContent = TotalData.date + " в " + TotalData.back_time;
+			BackTimeArrival.textContent = TotalData.date + " в " + backTimeArrival;
+
+			TotalForward.style.display = "none";
+			TotalBack.style.display = "block";
+			TotalTransferText.style.display = "none";
+		}
+
+		TotalContainer.style.display = "flex";
+	});
+}
+
+function getTimeString(minute) {
+	let hour = Math.trunc(minute / 60);
+	let min = minute % 60;
+	let minText = "";
+	let hourText = "";
+
+	if (hour === 1 || (hour - 1) % 10 === 0) {
+		hourText = " час ";
+	} else if (/[2-4]$/.test(String(hour))) {
+		hourText = " часа ";
+	} else if (/[5-90]$/.test(String(hour))) {
+		hourText = " часов ";
+	}
+	if (min === 1 || (min - 1) % 10 === 0) {
+		minText = " минута";
+	} else if (/[2-4]$/.test(String(min))) {
+		minText = " минуты";
+	} else if (/[5-90]$/.test(String(min))) {
+		minText = " минут";
+	}
+
+	let durationHour = hour ? hour + hourText : "";
+	let durationMin = min ? min + minText : "";
+	return durationHour + durationMin;
+}
+
+function getTicketsString(num) {
+	let string = "";
+
+	if (num === 1 || (num - 1) % 10 === 0) {
+		string = " билет";
+	} else if (/[2-4]$/.test(String(num))) {
+		string = " билета";
+	} else if (/[5-90]$/.test(String(num))) {
+		hourText = " билетов";
+	}
+
+	return num + string;
 }
