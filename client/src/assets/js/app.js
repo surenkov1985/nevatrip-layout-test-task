@@ -1,7 +1,7 @@
 "use strict";
 
 const Url = "http://localhost:5000";
-import { getTimeString } from "./utils";
+import { getTimeString, getTime } from "./utils";
 
 const CardContainer = document.querySelector(".container");
 const OnCodeButton = document.querySelector(".onCode");
@@ -240,6 +240,9 @@ function buildCards(data) {
 				const date = new Date();
 
 				let firstTimetable = flightDate.date + " " + flightDate.times[0].time.slice(0, 5);
+
+				const timeZoneSec = -date.getTimezoneOffset() * 60000;
+				const timeZoneDefault = obj.time_zone * 60000;
 				const today = new Date(date.toISOString().slice(0, 10));
 				let UTCDate = getTime(firstTimetable, obj);
 				console.log(UTCDate.toLocaleTimeString());
