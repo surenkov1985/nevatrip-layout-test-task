@@ -1,0 +1,325 @@
+.modal {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    align-items: center;
+    justify-content: center;
+    display: none;
+    z-index: 10;
+
+    &__close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        border: none;
+        background: none;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        &>svg {
+            width: 20px;
+            height: 20px;
+
+            & path {
+                fill: $TimeTextColor;
+            }
+        }
+    }
+
+    &.visible {
+        display: flex;
+    }
+
+    &__background {
+        width: 100%;
+        height: 100%;
+        background: rgba($DefaultColor, 0.6);
+    }
+
+    &__container {
+        width: 90%;
+        max-height: 90%;
+        max-width: 500px;
+        position: absolute;
+        background: $BtnHoverTextColor;
+        z-index: 20;
+        overflow-y: auto;
+        border-radius: 16px;
+    }
+
+    &__content {
+        width: 100%;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-radius: 16px;
+    }
+
+    &__content-form {
+        width: 100%;
+        padding: 30px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    &__title {
+        font-size: 18px;
+        text-align: center;
+
+        @media (min-width: $TabWidth) {
+            font-size: 24px;
+        }
+    }
+}
+
+.form {
+    width: 100%;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 20px;
+    margin-top: 50px;
+    position: relative;
+
+    &__error {
+        position: absolute;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #FF0000;
+        background: rgba($color: #FF0000, $alpha: 0.2);
+        color: #FF0000;
+        top: -40px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    &__item {
+        display: flex;
+        flex-direction: column;
+        row-gap: 10px;
+        width: 100%;
+
+        @media (min-width: $TabWidth) {
+            min-width: 450px;
+        }
+    }
+
+    &__item-title {
+        font-weight: 600;
+
+        @media (min-width: $TabWidth) {
+            font-size: 16px;
+        }
+    }
+
+    &__require {
+        font-weight: 600;
+        color: #FF0000;
+
+        @media (min-width: $TabWidth) {
+            font-size: 16px;
+        }
+    }
+
+    &__item-label {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 5px;
+
+        @media (min-width: $TabWidth) {
+            flex-direction: row;
+            align-items: center;
+        }
+    }
+
+    &__total-sum-btn {
+        padding: 14px 44px;
+        display: block;
+        background: $BtnColor;
+        border: 1px solid $BtnColor;
+        border-radius: 20px;
+        cursor: pointer;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+        color: $DefaultColor;
+
+        &:hover {
+            background: $BtnHoverColor;
+            border: 1px solid $BtnHoverColor;
+            box-shadow: 0px 2px 4px rgba($DefaultColor, 0.25);
+        }
+
+        @media (min-width: $TabWidth) {
+            font-size: $BtnFS;
+            padding: 16px 44px;
+            max-width: 250px;
+        }
+    }
+
+    &__submit {
+        padding: 14px 44px;
+        display: block;
+        background: $BtnColor;
+        border: 1px solid $BtnColor;
+        border-radius: 20px;
+        cursor: pointer;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+        color: $DefaultColor;
+        width: 100%;
+
+        &:hover {
+            background: $BtnHoverColor;
+            border: 1px solid $BtnHoverColor;
+            box-shadow: 0px 2px 4px rgba($DefaultColor, 0.25);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: default;
+            box-shadow: none;
+            background: $BtnColor;
+            border: 1px solid $BtnColor;
+        }
+
+        @media (min-width: $TabWidth) {
+            font-size: $BtnFS;
+            padding: 16px 44px;
+            max-width: 250px;
+        }
+    }
+
+    &__checkbox {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    &__check-text {
+        margin-left: 10px;
+        color: $TimeTextColor;
+        cursor: pointer;
+    }
+
+    &__kids-checkbox {
+        cursor: pointer;
+    }
+
+    &__numb-price {
+        font-size: 16px;
+
+        @media (min-width: $TabWidth) {
+            font-size: 20px;
+        }
+    }
+
+    &__price {
+        font-size: 16px;
+
+        @media (min-width: $TabWidth) {
+            font-size: 20px;
+        }
+    }
+
+    &__select,
+    &__input-email {
+        width: 100%;
+        outline: none;
+        padding: 10px;
+        font-size: 14px;
+        border: 1px solid $BorderColor;
+        border-radius: 8px;
+
+        @media (min-width: $TabWidth) {
+            font-size: 12px;
+
+            &>option {
+                font-size: 12px;
+            }
+        }
+    }
+
+    &__input {
+        width: 100%;
+        outline: none;
+        padding: 10px;
+        border: 1px solid $BorderColor;
+        border-radius: 8px;
+
+        @media (min-width: $TabWidth) {
+            width: 50%;
+        }
+    }
+
+    &__total-contnainer {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid $BorderColor;
+        border-radius: 6px;
+    }
+
+    &__total-item {
+        font-weight: 600;
+
+        @media (min-width: $TabWidth) {
+            font-size: 16px;
+        }
+    }
+}
+
+.result {
+    width: 100%;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 30px;
+
+    &__title {
+        font-size: 18px;
+        text-align: center;
+
+        @media (min-width: $TabWidth) {
+            font-size: 24px;
+        }
+    }
+
+    &__desc {
+        font-weight: 600;
+
+        @media (min-width: $TabWidth) {
+            font-size: 16px;
+        }
+    }
+
+    &__link {
+        color: $TimeTableHoverColor;
+        font-size: 14px;
+
+        @media (min-width: $TabWidth) {
+            font-size: 16px;
+        }
+
+        &:hover {
+            color: #0008ff;
+        }
+    }
+}

@@ -1,0 +1,52 @@
+.timetable {
+    display: flex;
+    flex-direction: column;
+    row-gap: 20px;
+
+    &__title {
+        font-size: 16px;
+
+        @media (min-width: $TabWidth) {
+            font-size: 20px;
+        }
+    }
+
+    &__date {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+
+        @media (min-width: $TabWidth) {
+            gap: 5px;
+        }
+    }
+
+    &__date-text {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    &__item {
+        padding: 4px 14px;
+        border-radius: 11px;
+        background: $TimeTableColor;
+        color: $TimeTableTextColor;
+        cursor: pointer;
+        text-decoration: none;
+        position: relative;
+        border: none;
+
+        &:hover {
+            background: $TimeTableHoverColor;
+            box-shadow: 0px 2px 4px rgba($DefaultColor, 0.25);
+            color: $BtnHoverTextColor;
+        }
+
+        @media (min-width: $TabWidth) {
+            font-size: $DesctopFS;
+            padding: 6px 16px;
+            border-radius: 12px;
+        }
+    }
+}

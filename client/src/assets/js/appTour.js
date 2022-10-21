@@ -1,3 +1,6 @@
+"use strict";
+
+import { getTimeString, getTicketsString, getTime } from "./utils";
 const Url = "http://localhost:5000";
 const loclUrl = new URL(location.href);
 const searchParams = new URLSearchParams(loclUrl.search);
@@ -44,7 +47,6 @@ function buildCard(data) {
 		TimetableDateTitle = document.createElement("p");
 
 	const durationTime = data.duration.split(":");
-
 	let minute = durationTime[0] * 60 + parseInt(durationTime[1]);
 	let duration = getTimeString(minute);
 
@@ -52,13 +54,13 @@ function buildCard(data) {
 	const date = new Date();
 	let firstTimetable = flightDate.date + " " + flightDate.times[0].time;
 
-	const timeZoneSec = -date.getTimezoneOffset() * 60000;
-	const timeZoneDefault = data.time_zone * 60000;
+	// const timeZoneSec = -date.getTimezoneOffset() * 60000;
+	// const timeZoneDefault = data.time_zone * 60000;
 	const today = new Date(date.toISOString().slice(0, 10));
-	const resDate = new Date(firstTimetable);
-	let DateTime = resDate.getTime();
-	let UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
-	console.log(firstTimetable, DateTime, timeZoneSec, new Date(DateTime - timeZoneDefault + timeZoneSec));
+	// const resDate = new Date(firstTimetable);
+	// let DateTime = resDate.getTime();
+	// let UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+	let UTCDate = getTime(firstTimetable, data);
 	const TimeableDate = document.createElement("span");
 	TimeableDate.className = "timetable__date";
 
@@ -71,9 +73,9 @@ function buildCard(data) {
 
 		for (let item of data.flight_dates) {
 			firstTimetable = item.date + " " + item.times[0].time;
-			let date = new Date(firstTimetable);
-			DateTime = date.getTime();
-			UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+			// let date = new Date(firstTimetable);
+			// DateTime = date.getTime();
+			UTCDate = getTime(firstTimetable, data);
 			if (UTCDate.toLocaleDateString() == today.toLocaleDateString()) {
 				newDate = item;
 			}
@@ -126,9 +128,9 @@ function buildCard(data) {
 		TimetableDate.appendChild(TimetableDateTitle);
 		flightDate.times.map(function (res) {
 			firstTimetable = flightDate.date + " " + res.time.slice(0, 5);
-			let date = new Date(firstTimetable);
-			DateTime = date.getTime();
-			UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+			// let date = new Date(firstTimetable);
+			// DateTime = date.getTime();
+			UTCDate = getTime(firstTimetable, data);
 			let time = UTCDate.toLocaleTimeString().slice(0, 5);
 
 			const TimeableItem = document.createElement("button");
@@ -152,7 +154,6 @@ function buildCard(data) {
 	TourDescBlock.appendChild(TourDescTitle);
 	TourDescBlock.appendChild(TourDesc);
 	TimetableBlock.appendChild(TimetableTitle);
-
 	TimetableBlock.appendChild(TimetableDate);
 
 	Content.appendChild(TitleBlock);
@@ -173,12 +174,11 @@ function buildCard(data) {
 
 function setModalValues(obj) {
 	const tourRoutes = ["Из A в B", "Из В в А", "Из A в B и обратно в А"];
-	let date;
+	let date = null;
 	let timeValue = "";
-	let data;
-	let backData;
-	let timeZoneSec;
-	let timeZoneDefault;
+	let data = null;
+	let backData = null;
+	let UTCDate = null;
 	const DateSelect = document.querySelector(".form__date"),
 		RouteSelect = document.querySelector(".form__route"),
 		TimeSelect = document.querySelector(".form__time"),
@@ -197,32 +197,26 @@ function setModalValues(obj) {
 	GroupPrice.textContent = obj.ticket_group_price;
 
 	DateSelect.appendChild(DateOption);
-
-	for (item of obj.flight_dates) {
+	for (let item of obj.flight_dates) {
 		const today = new Date();
-		timeZoneSec = -today.getTimezoneOffset() * 60000;
-		timeZoneDefault = obj.time_zone * 60000;
 		let firstTimetable = item.date + " " + item.times[0].time;
 		let date = new Date(firstTimetable);
-		let DateTime = date.getTime();
-		let UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+		UTCDate = getTime(firstTimetable, obj);
 		let day = UTCDate.toLocaleDateString();
 		if (date.toLocaleDateString() >= today.toLocaleDateString()) {
 			const DateOption = document.createElement("option");
 
 			DateOption.value = item.date;
 			DateOption.textContent = day;
-
 			DateSelect.appendChild(DateOption);
 		}
 	}
 
-	for (item of tourRoutes) {
+	for (let item of tourRoutes) {
 		const RouteOption = document.createElement("option");
 
 		RouteOption.value = item;
 		RouteOption.textContent = item;
-
 		RouteSelect.appendChild(RouteOption);
 	}
 
@@ -236,10 +230,8 @@ function setModalValues(obj) {
 		Option.textContent = "Выберите время";
 		TimeSelect.appendChild(Option);
 
-		if (this.value === "Из A в B") {
+		if (RouteSelect.value === "Из A в B") {
 			data = obj.flight_dates.find((item) => item.date === date);
-			console.log(data, obj.flight_dates, date);
-			times = data.times;
 
 			TimeSelect.innerHTML = "";
 			TimeSelect.appendChild(Option);
@@ -251,10 +243,8 @@ function setModalValues(obj) {
 			GroupPrice.textContent = obj.ticket_group_price;
 
 			for (let time of data.times) {
-				firstTimetable = date + " " + time.time.slice(0, 5);
-				let newDate = new Date(firstTimetable);
-				DateTime = newDate.getTime();
-				UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let firstTimetable = date + " " + time.time.slice(0, 5);
+				UTCDate = getTime(firstTimetable, obj);
 				let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
 
 				const Option = document.createElement("option");
@@ -279,10 +269,8 @@ function setModalValues(obj) {
 			for (let time of data.times) {
 				const Option = document.createElement("option");
 
-				firstTimetable = date + " " + time.time.slice(0, 5);
-				let newDate = new Date(firstTimetable);
-				DateTime = newDate.getTime();
-				UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let firstTimetable = date + " " + time.time.slice(0, 5);
+				UTCDate = getTime(firstTimetable, obj);
 				let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
 
 				Option.value = time.time + "(" + this.value + ")";
@@ -304,10 +292,8 @@ function setModalValues(obj) {
 			GroupPrice.textContent = obj.round_trip_group_price;
 
 			for (let time of data.times) {
-				firstTimetable = date + " " + time.time.slice(0, 5);
-				let newDate = new Date(firstTimetable);
-				DateTime = newDate.getTime();
-				UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let firstTimetable = date + " " + time.time.slice(0, 5);
+				UTCDate = getTime(firstTimetable, obj);
 				let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
 
 				const Option = document.createElement("option");
@@ -325,6 +311,7 @@ function setModalValues(obj) {
 				BackTimeSelect.appendChild(Option);
 
 				for (let time of backData.times) {
+					let firstTimetable = null;
 					if (!timeValue) {
 						firstTimetable = date + " " + time.time.slice(0, 5);
 					} else {
@@ -341,9 +328,7 @@ function setModalValues(obj) {
 						}
 					}
 					if (firstTimetable) {
-						let newDate = new Date(firstTimetable);
-						DateTime = newDate.getTime();
-						UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+						UTCDate = getTime(firstTimetable, obj);
 						let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
 
 						const Option = document.createElement("option");
@@ -357,10 +342,8 @@ function setModalValues(obj) {
 			});
 
 			for (let time of backData.times) {
-				firstTimetable = date + " " + time.time.slice(0, 5);
-				let newDate = new Date(firstTimetable);
-				DateTime = newDate.getTime();
-				UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let firstTimetable = date + " " + time.time.slice(0, 5);
+				UTCDate = getTime(firstTimetable, obj);
 				let newTime = UTCDate.toLocaleTimeString().slice(0, 5);
 
 				const Option = document.createElement("option");
@@ -375,6 +358,8 @@ function setModalValues(obj) {
 			TimeSelect.appendChild(Option);
 		}
 	});
+
+	onFormSubmit(obj);
 }
 
 function modalToggleListener() {
@@ -384,18 +369,27 @@ function modalToggleListener() {
 
 	for (let btn of buttons) {
 		btn.addEventListener("click", function () {
+			const TotalContainer = document.querySelector(".total");
 			modal.classList.add("visible");
+			TotalContainer.style.display = "none";
+			document.body.style.overflowY = "hidden";
 		});
 	}
 
 	modal.addEventListener("click", function (e) {
+		const TotalContainer = document.querySelector(".total");
 		if (e.target.classList.contains("modal__background")) {
 			modal.classList.remove("visible");
+			TotalContainer.style.display = "none";
+			document.body.style.overflowY = "initial";
 		}
 	});
 
 	closeBtn.addEventListener("click", function (e) {
+		const TotalContainer = document.querySelector(".total");
 		modal.classList.remove("visible");
+		TotalContainer.style.display = "none";
+		document.body.style.overflowY = "initial";
 	});
 }
 
@@ -457,7 +451,7 @@ function getTotalsum(data) {
 			ticket_kid_price: KidPrice.textContent,
 			ticket_preferential_quantity: formData.get("ticket_preferential_quantity"),
 			ticket_preferential_price: PreferentialPrice.textContent,
-			ticket_group_quantity: formData.get("ticket_grop_quantity"),
+			ticket_group_quantity: formData.get("ticket_group_quantity"),
 			ticket_group_price: GroupPrice.textContent,
 		};
 
@@ -468,14 +462,11 @@ function getTotalsum(data) {
 			let minTransfer = (backDate.getTime() - (date.getTime() + (parseInt(timeArr[0]) * 60 + parseInt(timeArr[1])) * 60000)) / 60000;
 			let minSum = parseInt(timeArr[0]) * 60 * 2 + parseInt(timeArr[1]) * 2;
 
-			console.log(minTransfer);
-
 			transfer = getTimeString(minTransfer);
 			duration = getTimeString(minSum);
 		} else {
 			let timeArr = formObj.duration.split(":");
 			min = parseInt(timeArr[0]) * 60 + parseInt(timeArr[1]);
-
 			duration = getTimeString(min);
 		}
 
@@ -541,48 +532,117 @@ function getTotalsum(data) {
 			TotalForward.style.display = "none";
 			TotalBack.style.display = "block";
 			TotalTransferText.style.display = "none";
+		} else if (!TotalData.time && !TotalData.back_time) {
+			TotalForward.style.display = "none";
+			TotalBack.style.display = "none";
+			TotalTransferText.style.display = "none";
 		}
 
 		TotalContainer.style.display = "flex";
 	});
 }
 
-function getTimeString(minute) {
-	let hour = Math.trunc(minute / 60);
-	let min = minute % 60;
-	let minText = "";
-	let hourText = "";
+///  FORM SUBMIT  ///
 
-	if (hour === 1 || (hour - 1) % 10 === 0) {
-		hourText = " час ";
-	} else if (/[2-4]$/.test(String(hour))) {
-		hourText = " часа ";
-	} else if (/[5-90]$/.test(String(hour))) {
-		hourText = " часов ";
-	}
-	if (min === 1 || (min - 1) % 10 === 0) {
-		minText = " минута";
-	} else if (/[2-4]$/.test(String(min))) {
-		minText = " минуты";
-	} else if (/[5-90]$/.test(String(min))) {
-		minText = " минут";
-	}
+function onFormSubmit(data) {
+	const Form = document.getElementById("tourForm"),
+		FormButton = document.querySelector(".form__submit"),
+		FormContent = document.querySelector(".modal__content-form"),
+		FormResult = document.querySelector(".result"),
+		TourLink = document.querySelector(".tour-link"),
+		Modal = document.querySelector(".modal");
 
-	let durationHour = hour ? hour + hourText : "";
-	let durationMin = min ? min + minText : "";
-	return durationHour + durationMin;
-}
+	TourLink.href = "./tour.html?id=" + data.id;
 
-function getTicketsString(num) {
-	let string = "";
+	Form.addEventListener("submit", function (e) {
+		e.preventDefault();
+		FormButton.setAttribute("disabled", true);
+		const formData = new FormData(tourForm);
 
-	if (num === 1 || (num - 1) % 10 === 0) {
-		string = " билет";
-	} else if (/[2-4]$/.test(String(num))) {
-		string = " билета";
-	} else if (/[5-90]$/.test(String(num))) {
-		hourText = " билетов";
-	}
+		const AdultPrice = document.querySelector(".adult"),
+			KidPrice = document.querySelector(".kid"),
+			PreferentialPrice = document.querySelector(".preferential"),
+			GroupPrice = document.querySelector(".group"),
+			FormError = document.querySelector(".form__error");
 
-	return num + string;
+		let totalPrice =
+			+AdultPrice.textContent * +formData.get("ticket_adult_quantity") +
+			+KidPrice.textContent * +formData.get("ticket_kid_quantity") +
+			+PreferentialPrice.textContent * +formData.get("ticket_preferential_quantity") +
+			+GroupPrice.textContent * +formData.get("ticket_group_quantity");
+
+		let totalTickets =
+			+formData.get("ticket_adult_quantity") +
+				+formData.get("ticket_kid_quantity") +
+				+formData.get("ticket_preferential_quantity") +
+				+formData.get("ticket_group_quantity") || 0;
+		let equalDate = null;
+		let time = formData.get("time") || formData.get("back_time");
+		if (!formData.get("date") || !time) {
+			equalDate = "";
+		} else {
+			equalDate = formData.get("date") + " " + time.slice(0, 8);
+		}
+
+		const formObj = {
+			event_id: data.id,
+			ticket_adult_quantity: equalDate,
+			date: formData.get("date"),
+			duration: data.duration,
+			route: formData.get("route"),
+			time: formData.get("time").slice(0, 8),
+			back_time: formData.get("back_time").slice(0, 8),
+			ticket_adult_quantity: formData.get("ticket_adult_quantity"),
+			action_price: AdultPrice.textContent,
+			ticket_kid_quantity: formData.get("ticket_kid_quantity"),
+			ticket_kid_price: KidPrice.textContent,
+			ticket_preferential_quantity: formData.get("ticket_preferential_quantity"),
+			ticket_preferential_price: PreferentialPrice.textContent,
+			ticket_group_quantity: formData.get("ticket_group_quantity"),
+			ticket_group_price: GroupPrice.textContent,
+			equal_price: totalPrice,
+			equal_tickets: totalTickets,
+			email: formData.get("email"),
+			equal_date: equalDate,
+		};
+
+		fetch(Url + "/reserveTickets", {
+			method: "POST",
+			body: JSON.stringify(formObj),
+			headers: {
+				"Content-type": "application/json",
+			},
+		})
+			.then((res) => {
+				return res.json();
+			})
+			.then((data) => {
+				if (data.message) {
+					throw new Error(data.message);
+				}
+				FormButton.removeAttribute("disabled");
+				FormContent.style.display = "none";
+				FormResult.style.display = "flex";
+			})
+			.catch((err) => {
+				FormError.textContent = err.message;
+				FormError.style.display = "block";
+				FormButton.removeAttribute("disabled");
+				setTimeout(() => {
+					FormError.textContent = "";
+					FormError.style.display = "none";
+				}, 1500);
+			});
+
+		TourLink.addEventListener("click", function (e) {
+			e.preventDefault();
+
+			Modal.style.display = "none";
+			FormContent.style.display = "flex";
+			FormResult.style.display = "none";
+			document.body.style.overflowY = "initial";
+
+			location.href = Link.href;
+		});
+	});
 }

@@ -4,7 +4,9 @@
 	"description": "",
 	"main": "index.js",
 	"dependencies": {
+		"nodemailer": "^6.8.0",
 		"nodemon": "^2.0.20",
+		"password-generator": "^2.3.2",
 		"whatwg-fetch": "^3.6.2"
 	},
 	"devDependencies": {

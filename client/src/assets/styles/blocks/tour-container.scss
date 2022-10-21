@@ -1,0 +1,22 @@
+.container {
+    width: 100%;
+    padding: 25px 16px;
+
+    @media (min-width: $TabWidth) {
+        padding: 50px 16px;
+    }
+
+    @media (min-width: $DesctopWidth) {
+        max-width: 1102px;
+    }
+
+    &__link {
+        text-decoration: none;
+        color: $TimeTableTextColor;
+
+        &:hover {
+            text-decoration: underline;
+            color: $TimeTableHoverColor;
+        }
+    }
+}

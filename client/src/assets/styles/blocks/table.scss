@@ -1,0 +1,38 @@
+.tables {
+    border-top: 1px solid $BorderColor;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+
+    &__container {
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+table {
+    box-sizing: border-box;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0
+}
+
+th {
+    padding: 5px 10px;
+    border-top: 2px solid $BorderColor;
+    border-bottom: 2px solid $BorderColor;
+
+    @media (min-width: $TabWidth) {
+        padding: 5px 20px;
+    }
+}
+
+td {
+    padding: 5px 10px;
+    border-bottom: 2px solid $BorderColor;
+
+    @media (min-width: $TabWidth) {
+        padding: 5px 20px;
+    }
+}

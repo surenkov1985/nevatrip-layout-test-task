@@ -1,11 +1,22 @@
 "use strict";
 
 const Url = "http://localhost:5000";
+import { getTimeString } from "./utils";
 
 const CardContainer = document.querySelector(".container");
 const OnCodeButton = document.querySelector(".onCode");
 
-OnCodeButton.addEventListener("click", function () {
+if (sessionStorage.hasOwnProperty(location.href)) {
+	CardContainer.innerHTML = "";
+	OnCodeButton.style.display = "none";
+	getdata();
+}
+OnCodeButton.addEventListener("click", function (e) {
+	e.preventDefault();
+	const link = location.href;
+	sessionStorage.setItem(link, "isVisited");
+	OnCodeButton.style.display = "none";
+
 	CardContainer.innerHTML = "";
 	getdata();
 });
@@ -169,28 +180,12 @@ function buildCards(data) {
 		ContentBtn.target = "_self";
 
 		const durationTime = obj.duration.split(":");
-		let huorText = "";
-		let minText = "";
-		if (parseInt(durationTime[0]) === 1 || (parseInt(durationTime[0]) - 1) % 10 === 0) {
-			huorText = " час ";
-		} else if (/[2-4]$/.test(durationTime[0])) {
-			huorText = " часа ";
-		} else if (/[5-90]$/.test(durationTime[0])) {
-			huorText = " часа ";
-		}
-		if (parseInt(durationTime[1]) === 1 || (parseInt(durationTime[1]) - 1) % 10 === 0) {
-			minText = " минута";
-		} else if (/[2-4]$/.test(durationTime[1])) {
-			minText = " минуты";
-		} else if (/[5-90]$/.test(durationTime[1])) {
-			minText = " минут";
-		}
-		const hour = parseInt(durationTime[0]) ? parseInt(durationTime[0]) + huorText : "";
-		const min = parseInt(durationTime[1]) ? durationTime[1] + minText : "";
+		let minute = parseInt(durationTime[0]) * 60 + parseInt(durationTime[1]);
+		let duration = getTimeString(minute);
 
 		ContentBtn.textContent = "Подробнее";
 		Title.textContent = obj.title;
-		TimeText.textContent = hour + min;
+		TimeText.textContent = duration;
 		ContentSumNumb.textContent = obj.action_price;
 		AdvElem.textContent = obj.adv;
 
@@ -245,13 +240,8 @@ function buildCards(data) {
 				const date = new Date();
 
 				let firstTimetable = flightDate.date + " " + flightDate.times[0].time.slice(0, 5);
-
-				const timeZoneSec = -date.getTimezoneOffset() * 60000;
-				const timeZoneDefault = obj.time_zone * 60000;
 				const today = new Date(date.toISOString().slice(0, 10));
-				const resDate = new Date(firstTimetable);
-				let DateTime = resDate.getTime();
-				let UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+				let UTCDate = getTime(firstTimetable, obj);
 				console.log(UTCDate.toLocaleTimeString());
 				const TimeableDate = document.createElement("span");
 				TimeableDate.className = "timetable__date";
@@ -265,9 +255,7 @@ function buildCards(data) {
 
 					for (let item of obj.flight_dates) {
 						firstTimetable = item.date + " " + item.times[0].time;
-						let date = new Date(firstTimetable);
-						DateTime = date.getTime();
-						UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+						UTCDate = getTime(firstTimetable, obj);
 						if (UTCDate.toLocaleDateString() == today.toLocaleDateString()) {
 							newDate = item;
 						}
@@ -282,9 +270,7 @@ function buildCards(data) {
 				if (TimeableDate.textContent) {
 					flightDate.times.map(function (res) {
 						firstTimetable = flightDate.date + " " + res.time;
-						let date = new Date(firstTimetable);
-						DateTime = date.getTime();
-						UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
+						UTCDate = getTime(firstTimetable, obj);
 						let time = UTCDate.toLocaleTimeString().slice(0, 5);
 
 						const TimeableItem = document.createElement("a");
