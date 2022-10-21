@@ -54,12 +54,7 @@ function buildCard(data) {
 	const date = new Date();
 	let firstTimetable = flightDate.date + " " + flightDate.times[0].time;
 
-	// const timeZoneSec = -date.getTimezoneOffset() * 60000;
-	// const timeZoneDefault = data.time_zone * 60000;
 	const today = new Date(date.toISOString().slice(0, 10));
-	// const resDate = new Date(firstTimetable);
-	// let DateTime = resDate.getTime();
-	// let UTCDate = new Date(DateTime - timeZoneDefault + timeZoneSec);
 	let UTCDate = getTime(firstTimetable, data);
 	const TimeableDate = document.createElement("span");
 	TimeableDate.className = "timetable__date";
@@ -73,8 +68,6 @@ function buildCard(data) {
 
 		for (let item of data.flight_dates) {
 			firstTimetable = item.date + " " + item.times[0].time;
-			// let date = new Date(firstTimetable);
-			// DateTime = date.getTime();
 			UTCDate = getTime(firstTimetable, data);
 			if (UTCDate.toLocaleDateString() == today.toLocaleDateString()) {
 				newDate = item;
@@ -128,8 +121,6 @@ function buildCard(data) {
 		TimetableDate.appendChild(TimetableDateTitle);
 		flightDate.times.map(function (res) {
 			firstTimetable = flightDate.date + " " + res.time.slice(0, 5);
-			// let date = new Date(firstTimetable);
-			// DateTime = date.getTime();
 			UTCDate = getTime(firstTimetable, data);
 			let time = UTCDate.toLocaleTimeString().slice(0, 5);
 
