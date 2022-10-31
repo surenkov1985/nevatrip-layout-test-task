@@ -1,6 +1,6 @@
 # Проект по тестовому заданию на вакансию "HTML-верстальщик / Front-end разработчик" в компанию неватрип
 
-[Демо](http://short.mich-man.ru/index.html)
+[Демо](http://nevatest.mich-man.ru/index.html)
 
 #Задание на верстку:
 
